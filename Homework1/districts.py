@@ -11,9 +11,12 @@ def district_margins(state_lines):
 
     @lines The csv rows that correspond to the districts of a single state
     """
+    for x in state_lines:
+        print(x,"\n")
 
     # Complete this function
-    return dict((int(x["D"]), 25.0) for x in state_lines if x["D"] and x["D"] != "H")
+    return dict((int(x["D"].replace(" - FULL TERM","").replace(" - UNEXPIRED TERM","")), 25.0) for x in state_lines 
+        if x["D"] and x["D"] != "H")
 
 def all_states(lines):
     """
@@ -21,9 +24,8 @@ def all_states(lines):
     CsvReader object.  Don't think too hard on this; it can be written
     in one line of Python.
     """
+    return set((x["STATE"]) for x in lines if x["STATE"])
 
-    # Complete this function
-    return set(["Alabama"])
 
 def all_state_rows(lines, state):
     """
@@ -33,9 +35,9 @@ def all_state_rows(lines, state):
     @lines Only return lines from this larger list
     """
 
-    # Complete/correct this function
-    for ii in lines[:10]:
-        yield ii
+    for ii in lines:
+        if ii["STATE"] == state:
+            yield ii
 
 if __name__ == "__main__":
     # You shouldn't need to modify this part of the code
@@ -48,7 +50,11 @@ if __name__ == "__main__":
         margins = district_margins(all_state_rows(lines, state))
 
         for ii in margins:
+            #print(ii)
             summary[(state, ii)] = margins[ii]
 
     for ii, mm in sorted(summary.items(), key=lambda x: x[1]):
         output.writerow({"STATE": ii[0], "DISTRICT": ii[1], "MARGIN": mm})
+
+
+
