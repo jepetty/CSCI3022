@@ -3,6 +3,23 @@ from csv import DictReader, DictWriter
 import heapq
 
 kHEADER = ["STATE", "DISTRICT", "MARGIN"]
+kALASKA = """LINE,STATE ABBREVIATION,STATE,D,FEC ID#,(I),CANDIDATE NAME (First),CANDIDATE NAME (Last),CANDIDATE NAME,TOTAL VOTES,PARTY,PRIMARY VOTES,PRIMARY %,RUNOFF VOTES,RUNOFF %,GENERAL VOTES ,GENERAL %,GE RUNOFF ELECTION VOTES (LA),GE RUNOFF ELECTION % (LA),"COMBINED GE PARTY TOTALS (CT, NY, SC)","COMBINED % (CT, NY, SC)",GE WINNER INDICATOR,FOOTNOTES
+52,AK,Alaska,0,H6AK00045,(I),Don,Young,"Young, Don",,R,"79,393","74,29%",,,"142,572","50,97%",,,,,W,
+53,AK,Alaska,0,H0AK00097,,John R.,Cox,"Cox, John R.",,R,"14,497","13,57%",,,,,,,,,,
+54,AK,Alaska,0,H4AK00149,,David  ,Seaward,"Seaward, David  ",,R,"7,604","7,12%",,,,,,,,,,
+55,AK,Alaska,0,H4AK00131,,"David,Dohner,"Dohner, David",,R,"5,373","5,03%",,,,,,,,,,
+56,AK,Alaska,0,n/a,,,,,Party Votes:,R,"106,867",,,,,,,,,,,
+57,AK,Alaska,0,H4AK00123,,Forrest ,Dunbar,"Dunbar, Forrest ",,D,"38,735","80,92%",,,"114,602","40,97%",,,,,,
+58,AK,Alaska,0,H4AK00057,,Frank J.,Vondersaar,"Vondersaar, Frank J.",,D,"9,132","19,08%",,,,,,,,,,
+59,AK,Alaska,0,n/a,,,,,Party Votes:,D,"47,867",,,,,,,,,,,
+60,AK,Alaska,0,H2AK00143,,Jim C.,McDermott,"McDermott, Jim C.",,LIB,"13,437","100,00%",,,"21,29","7,61%",,,,,,
+61,AK,Alaska,0,n/a,,,,,Party Votes:,LIB,"13,437",,,,,,,,,,,
+62,AK,Alaska,0,n/a,,,,Scattered,,W,,,,,"1,277","0,46%",,,,,,
+63,AK,Alaska,0,n/a,,,,,District Votes:,,"168,171",,,,"279,741",,,,,,,
+64,AK,Alaska,H,n/a,,,,,Total State Votes:,,"168,171",,,,"279,741",,,,,,,
+65,AK,Alaska,,n/a,,,,,,,,,,,,,,,,,,
+66,AK,Alaska,,n/a,,,,,,,,,,,,,,,,,,
+""".split("\n")
 
 def district_margins(state_lines):
     """
@@ -34,9 +51,15 @@ def district_margins(state_lines):
     second = 0
     for x in state_lines:
         if x["D"] and x["D"] != "H":
+            if x["STATE"] == "West Virginia":
+                print(x["D"], " ", x["GENERAL %"])
             district = int(x["D"].replace(" - FULL TERM","").replace(" - UNEXPIRED TERM",""))
             if district != old_district:
                 if old_district != -1:
+                    if maxper == 0 or second == 0:
+                        maxper = 100
+                    if x["STATE"] == "West Virginia":
+                        print("district: ", old_district, " ", maxper, " ", second)
                     margins[old_district] = maxper - second
                 vote_per = x["GENERAL %"].replace(",",".").replace("%","")
                 if vote_per != "":
@@ -44,6 +67,8 @@ def district_margins(state_lines):
                 else:
                     maxper = 0
                 second = 0
+                #if x["STATE"] == "West Virginia":
+                #    print("new district: ", district, " ", maxper, " ", second)
             else:
                 vote_per = x["GENERAL %"].replace(",",".").replace("%","")
                 if (vote_per != ""):
@@ -56,6 +81,12 @@ def district_margins(state_lines):
                 maxper=100
                 second = 0
             old_district = district
+
+    if x["STATE"] == "West Virginia":
+        print("district: ",old_district, " ", maxper, " ", second)
+    if maxper == 0 or second == 0:
+        maxper = 100
+    margins[old_district] = maxper - second
     return margins
 
 
