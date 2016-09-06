@@ -51,15 +51,13 @@ def district_margins(state_lines):
     second = 0
     for x in state_lines:
         if x["D"] and x["D"] != "H":
-            if x["STATE"] == "West Virginia":
-                print(x["D"], " ", x["GENERAL %"])
-            district = int(x["D"].replace(" - FULL TERM","").replace(" - UNEXPIRED TERM",""))
+            if " - UNEXPIRED TERM" in x["D"]:
+                break
+            district = int(x["D"].replace(" - FULL TERM",""))
             if district != old_district:
                 if old_district != -1:
                     if maxper == 0 or second == 0:
                         maxper = 100
-                    if x["STATE"] == "West Virginia":
-                        print("district: ", old_district, " ", maxper, " ", second)
                     margins[old_district] = maxper - second
                 vote_per = x["GENERAL %"].replace(",",".").replace("%","")
                 if vote_per != "":
@@ -67,8 +65,6 @@ def district_margins(state_lines):
                 else:
                     maxper = 0
                 second = 0
-                #if x["STATE"] == "West Virginia":
-                #    print("new district: ", district, " ", maxper, " ", second)
             else:
                 vote_per = x["GENERAL %"].replace(",",".").replace("%","")
                 if (vote_per != ""):
@@ -77,13 +73,11 @@ def district_margins(state_lines):
                         maxper = float(vote_per)
                     elif float(vote_per) < maxper and float(vote_per) > second:
                         second = float(vote_per)
-            if x["GENERAL VOTES "] == "Unopposed":
-                maxper=100
-                second = 0
+            #if x["GENERAL VOTES "] == "Unopposed":
+            #    maxper=100
+            #    second = 0
             old_district = district
 
-    if x["STATE"] == "West Virginia":
-        print("district: ",old_district, " ", maxper, " ", second)
     if maxper == 0 or second == 0:
         maxper = 100
     margins[old_district] = maxper - second
