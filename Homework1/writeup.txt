@@ -3,4 +3,7 @@ all_states(lines)
 	JUST KIDDING THAT DIDN'T work!!! expecting a set as the return thing-> the only way to do that is to iterate over the whole group of lines within creating the set, so that's what I did. :)
 
 all_state_rows(lines,state)
-	This one was simple in this function, simply checked if the states matched, and if they did I returned that state's line BUT the tricky part came from the function district_margins(statelines) -> this one recognized that some of the states' "D" column wasn't clean, so I had to clean it by removing extraneous details to get this method to pass
+	This one was simple in this function, simply checked if the states matched, and if they did I returned that state's line BUT the tricky part came from the function district_margins(statelines) -> this one recognized that some of the states' "D" column wasn't clean, so I had to clean it by removing extraneous details to get this method to pass -> no longer had to do this once they corrected the file uploaded to github (maybe include it in the writeup for context/to show you could recognize how to clean the data if need be)
+
+district_margins(state_lines)
+	This function was much trickier (and current implementation is suppppppper inefficient). Basically I created a new function that took in took as arguments all the lines for that state and the district we were looking at then just went through and found the greatest percentage of general votes and the second greatest and found the difference between the two. This isn't great though because it just passes all the data off to another function, doesn't do it functionally, and it calculates it for every row for the state (not just once per district). These are both things to fix once I have everything else working.

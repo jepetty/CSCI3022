@@ -11,12 +11,18 @@ def district_margins(state_lines):
 
     @lines The csv rows that correspond to the districts of a single state
     """
-    for x in state_lines:
-        print(x,"\n")
+    #for x in state_lines:
+        #if x["D"] != "H" and x["STATE"] == "Louisiana":
+            #print("DISTRICT: ", x["D"]," PRIMARY %: ", x["PRIMARY %"], " RUNOFF %: ", x["RUNOFF %"], " GENERAL %: ", x["GENERAL %"], " GE RUNOFF ELECTION % (LA): ",
+                #x["GE RUNOFF ELECTION % (LA)"], " COMBINED % (CT, NY, SC): ", x["COMBINED % (CT, NY, SC)"])
+            #print(x["D"], " ",x["TOTAL VOTES"], " ", x["GENERAL VOTES "])
+            #print(x["D"], " ", float(x["GENERAL %"].replace(",",".").replace("%","")))
 
     # Complete this function
-    return dict((int(x["D"].replace(" - FULL TERM","").replace(" - UNEXPIRED TERM","")), 25.0) for x in state_lines 
-        if x["D"] and x["D"] != "H")
+    return dict((int(x["D"].replace(" - FULL TERM", "").replace(" - UNEXPIRED TERM", "")), 
+        winner(x["D"].replace(" - FULL TERM","").replace(" - UNEXPIRED TERM",""), state_lines))
+        #winner(x["D"].replace(" - FULL TERM","").replace(" - UNEXPIRED TERM",""),x["GENERAL %"].replace(",",".").replace("%",""))) 
+        for x in state_lines if x["D"] and x["D"] != "H")
 
 def all_states(lines):
     """
@@ -39,6 +45,26 @@ def all_state_rows(lines, state):
         if ii["STATE"] == state:
             yield ii
 
+def winner(district, state_info):
+    maxper = 0;
+    second = 0;
+    for x in state_info:
+        vote_per = x["GENERAL %"].replace(",",".").replace("%","")
+        if x["D"].replace(" - FULL TERM","").replace(" - UNEXPIRED TERM","") == district and vote_per != "":
+            #print(x["GENERAL %"].replace(",",".").replace("%",""))
+            #votes = x["GENERAL %"].replace(",",".").replace("%","")
+            #votes = float(x["GENERAL %"].replace(",",".").replace("%",""))
+            if float(vote_per) > maxper:
+                second = maxper
+                maxper = float(vote_per)
+            elif float(vote_per) < maxper and float(vote_per) > second:
+                second = float(vote_per)
+    return (maxper - second)
+
+    #if vote_percentage == "":
+        #print(district, " ", vote_percentage)
+    #return vote_percentage["GENERAL %"]
+
 if __name__ == "__main__":
     # You shouldn't need to modify this part of the code
     lines = list(DictReader(open("../data/2014_election_results.csv")))
@@ -50,7 +76,7 @@ if __name__ == "__main__":
         margins = district_margins(all_state_rows(lines, state))
 
         for ii in margins:
-            #print(ii)
+            #print(state, " ", ii, " ", margins[ii])
             summary[(state, ii)] = margins[ii]
 
     for ii, mm in sorted(summary.items(), key=lambda x: x[1]):
