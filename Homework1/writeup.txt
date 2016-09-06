@@ -10,3 +10,8 @@ district_margins(state_lines)
 
 	So I thought that was done, but we had this weirdness where it would only process districts 1 or 0 (why?? Who knows....). SOOOO I completely scrapped that and just did a really messy imperative programming for loop. Current status: messing up on west virginia for some reason and has an error when you run the tests so check those two things out.
 	Needed to make sure there was more than one entry per district, otherwise set it equal to 100. Seems to be working correctly? Let's hope so when I get the grading script?
+	Also needed to account for FULL TERM and UNEXPIRED TERM: only looked at full term data, otherwise it compared the same candidates
+
+WORD_COUNTS:
+words(text)
+	This function was really easy once I noticed the regex matching expression and looked up documentation on python's regex library. It was a simple "find all" words that matched that sequence in the lowercase version of that text

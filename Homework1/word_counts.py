@@ -10,7 +10,8 @@ def text_from_zipfile(zip_file):
     zip file.
     """
     # Modify this function
-    return ["nope"]
+    return ["Jessica is the best thing ever!"]
+    #return ["nope"]
 
 def words(text):
     """
@@ -19,7 +20,7 @@ def words(text):
     lower case.
     """
     # Modify this function
-    return text.lower().split()
+    return re.findall(kWORDS,text.lower())\
 
 def accumulate_counts(words, total=Counter()):
     """
@@ -38,7 +39,12 @@ if __name__ == "__main__":
     # You should not need to modify this part of the code
     total = Counter()
     for tt in text_from_zipfile("../data/state_union.zip"):
-        total = accumulate_counts(words(tt), total)
+        word_call = words(tt)
+        for word in word_call:
+            print(word)
+        total = accumulate_counts(word_call, total)
+        #total = accumulate_counts(words(tt), total)
 
     for ii, cc in total.most_common(100):
         print("%s\t%i" % (ii, cc))
+
