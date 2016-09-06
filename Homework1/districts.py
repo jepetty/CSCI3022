@@ -18,11 +18,57 @@ def district_margins(state_lines):
             #print(x["D"], " ",x["TOTAL VOTES"], " ", x["GENERAL VOTES "])
             #print(x["D"], " ", float(x["GENERAL %"].replace(",",".").replace("%","")))
 
+    #for x in state_lines:
+    #    if x["D"] and x["D"] != "H":
+    #        print(x["STATE"], " ",x["D"], " ", x["GENERAL %"])
+    #        winning_district(x["D"],state_lines)
+
+    #margins = {}
+    #for ss in set(x["D"] for x in state_lines if x["D"] and x["D"] != "H"):
+    #    margins[ss] = winning_district(ss,state_lines)
+    #return margins
+
+    margins = {}
+    old_district = -1
+    maxper = 0
+    second = 0
+    for x in state_lines:
+        if x["D"] and x["D"] != "H":
+            district = int(x["D"].replace(" - FULL TERM","").replace(" - UNEXPIRED TERM",""))
+            if district != old_district:
+                if old_district != -1:
+                    margins[old_district] = maxper - second
+                vote_per = x["GENERAL %"].replace(",",".").replace("%","")
+                if vote_per != "":
+                    maxper = float(vote_per)
+                else:
+                    maxper = 0
+                second = 0
+            else:
+                vote_per = x["GENERAL %"].replace(",",".").replace("%","")
+                if (vote_per != ""):
+                    if float(vote_per) > maxper:
+                        second = maxper
+                        maxper = float(vote_per)
+                    elif float(vote_per) < maxper and float(vote_per) > second:
+                        second = float(vote_per)
+            if x["GENERAL VOTES "] == "Unopposed":
+                maxper=100
+                second = 0
+            old_district = district
+    return margins
+
+
+    #margins = {}
+    #for x in state_lines:
+    #    if x["D"] != "H":
+    #        margins[x["D"].replace(" - FULL TERM", "").replace(" - UNEXPIRED TERM","")] = winning_district(x["D"], state_lines)
+    #return margins
+
     # Complete this function
-    return dict((int(x["D"].replace(" - FULL TERM", "").replace(" - UNEXPIRED TERM", "")), 
-        winner(x["D"].replace(" - FULL TERM","").replace(" - UNEXPIRED TERM",""), state_lines))
-        #winner(x["D"].replace(" - FULL TERM","").replace(" - UNEXPIRED TERM",""),x["GENERAL %"].replace(",",".").replace("%",""))) 
-        for x in state_lines if x["D"] and x["D"] != "H")
+    #return dict((int(x["D"].replace(" - FULL TERM", "").replace(" - UNEXPIRED TERM", "")), 
+        #25) for x in state_lines if x["D"] and x["D"] != "H")
+        #winner(x["D"], state_lines)) for x in state_lines if x["D"] and x["D"] != "H")
 
 def all_states(lines):
     """
@@ -45,12 +91,14 @@ def all_state_rows(lines, state):
         if ii["STATE"] == state:
             yield ii
 
-def winner(district, state_info):
+def winning_district(district, state_info):
     maxper = 0;
     second = 0;
     for x in state_info:
         vote_per = x["GENERAL %"].replace(",",".").replace("%","")
-        if x["D"].replace(" - FULL TERM","").replace(" - UNEXPIRED TERM","") == district and vote_per != "":
+        print(vote_per)
+        print(x["D"], " ", district)
+        if x["D"] == district and vote_per != "":
             #print(x["GENERAL %"].replace(",",".").replace("%",""))
             #votes = x["GENERAL %"].replace(",",".").replace("%","")
             #votes = float(x["GENERAL %"].replace(",",".").replace("%",""))

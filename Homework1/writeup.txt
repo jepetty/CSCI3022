@@ -7,3 +7,5 @@ all_state_rows(lines,state)
 
 district_margins(state_lines)
 	This function was much trickier (and current implementation is suppppppper inefficient). Basically I created a new function that took in took as arguments all the lines for that state and the district we were looking at then just went through and found the greatest percentage of general votes and the second greatest and found the difference between the two. This isn't great though because it just passes all the data off to another function, doesn't do it functionally, and it calculates it for every row for the state (not just once per district). These are both things to fix once I have everything else working.
+
+	So I thought that was done, but we had this weirdness where it would only process districts 1 or 0 (why?? Who knows....). SOOOO I completely scrapped that and just did a really messy imperative programming for loop. Current status: messing up on west virginia for some reason and has an error when you run the tests so check those two things out.
