@@ -15,7 +15,7 @@ def text_from_zipfile(zip_file):
         for curr_file in files:
             if "README" not in curr_file:
                 with myzip.open(curr_file) as speech:
-                    yield speech.read().decode("iso-8859-1","backslashreplace")
+                    yield speech.read().decode("utf-8","ignore")
     #return ["nope"]
 
 def words(text):
