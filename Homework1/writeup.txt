@@ -15,3 +15,6 @@ district_margins(state_lines)
 WORD_COUNTS:
 words(text)
 	This function was really easy once I noticed the regex matching expression and looked up documentation on python's regex library. It was a simple "find all" words that matched that sequence in the lowercase version of that text
+
+text_from_zipfile(zipfile)
+	I needed to open the zipfile as a zip file, then iterate through all the files within that zip file using zipfile.namelist. Then I needed to open all of the files and read them, making sure I decoded them in the right way (using utf-8)

@@ -24,11 +24,6 @@ def words(text):
     characters in the range a-z or A-Z.  The resulting words should be
     lower case.
     """
-    # Modify this function
-    #if isinstance(text, str):
-    #    new_text = text
-    #else:
-    #    new_text = text.decode('utf-8', 'ignore')
     return re.findall(kWORDS,text.lower())
 
 def accumulate_counts(words, total=Counter()):

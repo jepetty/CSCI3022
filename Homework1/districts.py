@@ -16,33 +16,36 @@ def district_margins(state_lines):
     maxper = 0
     second = 0
     for x in state_lines:
+        #if x["STATE"] == "New Jersey":
+        #    print(x, "\n")
         if x["D"] and x["D"] != "H":
-            if " - UNEXPIRED TERM" in x["D"]:
-                break
-            district = int(x["D"].replace(" - FULL TERM",""))
-            if district != old_district:
-                if old_district != -1:
-                    if maxper == 0 or second == 0:
-                        maxper = 100
-                    margins[old_district] = maxper - second
-                vote_per = x["GENERAL %"].replace(",",".").replace("%","")
-                if vote_per != "":
-                    maxper = float(vote_per)
-                else:
-                    maxper = 0
-                second = 0
-            else:
-                vote_per = x["GENERAL %"].replace(",",".").replace("%","")
-                if (vote_per != ""):
-                    if float(vote_per) > maxper:
-                        second = maxper
+            if " - UNEXPIRED TERM" not in x["D"]:
+                district = int(x["D"].replace(" - FULL TERM",""))
+                if district != old_district:
+                    if old_district != -1:
+                        if maxper == 0 or second == 0:
+                            maxper = 100
+                        if x["STATE"] == "New Jersey":
+                            print("updating: ", old_district, " ", maxper-second)
+                        margins[old_district] = maxper - second
+                    vote_per = x["GENERAL %"].replace(",",".").replace("%","")
+                    if vote_per != "":
                         maxper = float(vote_per)
-                    elif float(vote_per) < maxper and float(vote_per) > second:
-                        second = float(vote_per)
+                    else:
+                        maxper = 0
+                    second = 0
+                else:
+                    vote_per = x["GENERAL %"].replace(",",".").replace("%","")
+                    if (vote_per != ""):
+                        if float(vote_per) > maxper:
+                            second = maxper
+                            maxper = float(vote_per)
+                        elif float(vote_per) < maxper and float(vote_per) > second:
+                            second = float(vote_per)
             #if x["GENERAL VOTES "] == "Unopposed":
             #    maxper=100
             #    second = 0
-            old_district = district
+                old_district = district
 
     if maxper == 0 or second == 0:
         maxper = 100
