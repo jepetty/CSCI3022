@@ -20,18 +20,27 @@ def district_margins(state_lines):
     old_district = -1
     maxper = 0
     second = 0
+    top_cand = ""
+    win_flag = False
     for x in state_lines:
         if x["D"] and x["D"] != "H":
             if " - UNEXPIRED TERM" not in x["D"]:
                 district = int(x["D"].replace(" - FULL TERM",""))
+                if x["GE WINNER INDICATOR"] == "W":
+                    win_flag = True
                 if district != old_district:
                     if old_district != -1:
-                        if maxper == 0 or second == 0:
-                            maxper = 100
-                        margins[old_district] = maxper - second
+                        if maxper != 0 and second != 0:
+                            margins[old_district] = maxper - second
+                        elif second == 0 and maxper == 100:
+                            margins[old_district] = 100
+                        elif win_flag == True:
+                            margins[old_district] = maxper
+                            win_flag = False
                     vote_per = x["GENERAL %"].replace(",",".").replace("%","")
                     if vote_per != "":
                         maxper = float(vote_per)
+                        top_cand = x["CANDIDATE NAME"]
                     else:
                         maxper = 0
                     second = 0
@@ -41,13 +50,17 @@ def district_margins(state_lines):
                         if float(vote_per) > maxper:
                             second = maxper
                             maxper = float(vote_per)
+                            top_cand = x["CANDIDATE NAME"]
                         elif float(vote_per) < maxper and float(vote_per) > second:
-                            second = float(vote_per)
+                            if x["CANDIDATE NAME"] != top_cand:
+                                second = float(vote_per)
                 old_district = district
 
     if maxper == 0 or second == 0:
         maxper = 100
-    margins[old_district] = maxper - second
+    else:
+        margins[old_district] = maxper - second
+
     return margins
 
 def all_states(lines):

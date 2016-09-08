@@ -68,7 +68,8 @@ class TestAuto(unittest.TestCase):
                             self.assertTrue(jj in check_against,
                                             msg="Missing key %s in test %s" %
                                             (jj, fname))
-                            self.assertAlmostEqual(rr[jj], check_against[jj])
+                            self.assertAlmostEqual(rr[jj], check_against[jj],
+                                                   places=2)
                         self.assertEqual(rr.keys(), check_against.keys())
                     else:
                         self.assertEqual(rr, check_against)
