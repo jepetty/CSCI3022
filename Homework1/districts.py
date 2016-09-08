@@ -1,3 +1,8 @@
+# Jessica Petty
+# CSCI 3022
+# Homework 1
+# September 8, 2016
+
 from collections import defaultdict
 from csv import DictReader, DictWriter
 import heapq
@@ -16,8 +21,6 @@ def district_margins(state_lines):
     maxper = 0
     second = 0
     for x in state_lines:
-        #if x["STATE"] == "New Jersey":
-        #    print(x, "\n")
         if x["D"] and x["D"] != "H":
             if " - UNEXPIRED TERM" not in x["D"]:
                 district = int(x["D"].replace(" - FULL TERM",""))
@@ -25,8 +28,6 @@ def district_margins(state_lines):
                     if old_district != -1:
                         if maxper == 0 or second == 0:
                             maxper = 100
-                        if x["STATE"] == "New Jersey":
-                            print("updating: ", old_district, " ", maxper-second)
                         margins[old_district] = maxper - second
                     vote_per = x["GENERAL %"].replace(",",".").replace("%","")
                     if vote_per != "":
@@ -42,9 +43,6 @@ def district_margins(state_lines):
                             maxper = float(vote_per)
                         elif float(vote_per) < maxper and float(vote_per) > second:
                             second = float(vote_per)
-            #if x["GENERAL VOTES "] == "Unopposed":
-            #    maxper=100
-            #    second = 0
                 old_district = district
 
     if maxper == 0 or second == 0:

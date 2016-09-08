@@ -1,20 +1,19 @@
-all_states(lines)
-	Simply iterated over all the lines in the document, if the value for "STATE" was unique I returned it, otherwise I kept going
-	JUST KIDDING THAT DIDN'T work!!! expecting a set as the return thing-> the only way to do that is to iterate over the whole group of lines within creating the set, so that's what I did. :)
+Jessica Petty
+CSCI 3022
+Assignment 1 Write Up
+September 8, 2016
 
-all_state_rows(lines,state)
-	This one was simple in this function, simply checked if the states matched, and if they did I returned that state's line BUT the tricky part came from the function district_margins(statelines) -> this one recognized that some of the states' "D" column wasn't clean, so I had to clean it by removing extraneous details to get this method to pass -> no longer had to do this once they corrected the file uploaded to github (maybe include it in the writeup for context/to show you could recognize how to clean the data if need be)
+For this assignment, I chose to start with the districts.py file and then move on to the word_counts.py file once I had that file completed and all tests passing. To start, I included lots of print statements in whatever function I was working in, both to understand what was going on but also to get little glimpses of the data file in chunks rather than all at once. 
 
-district_margins(state_lines)
-	This function was much trickier (and current implementation is suppppppper inefficient). Basically I created a new function that took in took as arguments all the lines for that state and the district we were looking at then just went through and found the greatest percentage of general votes and the second greatest and found the difference between the two. This isn't great though because it just passes all the data off to another function, doesn't do it functionally, and it calculates it for every row for the state (not just once per district). These are both things to fix once I have everything else working.
+I started with the function all_states which was really simple if you had functional programming in mind, just iterating over all lines and returning the unique state entries (for which I also needed to look up a little bit on python Sets). Then I moved on to all_state_rows. This method was simple to implement (check if a line matches with the state and then return that line using python's "yield" keyword), but the complication this method brought on was that it revealed some problems with the data set we were given. Once I got this method working, district_margins began not executing because some of the district entries has an extra " - FULL TERM" or " - EXPIRED TERM" after the numeral (which mad these districts inconvertible to integers). To get around this, I just temporarily stripped the district entries of any extranneous details to continue on to the next function. The function district_margins was arguably the trickiest, and also where I discovered the most problems with the data. My general idea behind this function was to simply loop through and for each district keep track of the highest voting percentage and the second highest voting percentage and then find the difference between those two. Naturally, though, these weren't the only issues I had to solve. One of the big things I realized was that I needed to just ignore districts that had " - UNEXPIRED TERM" in their name or else the count would be off. Throughout this method, whenever I ran into something funky, I would just take it back to simple print statements and debug my code one state at a time until I figured out which corner cases I wasn't accounting for. 
 
-	So I thought that was done, but we had this weirdness where it would only process districts 1 or 0 (why?? Who knows....). SOOOO I completely scrapped that and just did a really messy imperative programming for loop. Current status: messing up on west virginia for some reason and has an error when you run the tests so check those two things out.
-	Needed to make sure there was more than one entry per district, otherwise set it equal to 100. Seems to be working correctly? Let's hope so when I get the grading script?
-	Also needed to account for FULL TERM and UNEXPIRED TERM: only looked at full term data, otherwise it compared the same candidates
+After districts.py I moved on to word_counts. py. For this file, examining external resources was crucial. For instance, the first method I worked on, words, was really simple once I looked at documentation for python's regex library; I just had to use the given regex statement and find all matches in the string we were operating on. The next method I completed was text_from_zipfile, which also wasn't very complicated with some basic knowledge of python's ZipFile library. For this method, I opened the zipfile, retrieved the names of all the files within that zipfile, then opened each file and returned its decoded contents (using python's decode), ignoring the README file included in that zip. The last method I examined was accumulate_counts, which was also super simple using python's Counter class; I just iterated the entry in the Counter every time I saw that word. 
 
-WORD_COUNTS:
-words(text)
-	This function was really easy once I noticed the regex matching expression and looked up documentation on python's regex library. It was a simple "find all" words that matched that sequence in the lowercase version of that text
+Overall, I learned that you really have to be careful with data. There were so many times that I thought I was finished cleaning and handling the data and then I would find some strange corner case that I didn't notice earlier. It's quite important to really thoroughly examine the data and make sure everything lines up, both on a micro and macro scale.
 
-text_from_zipfile(zipfile)
-	I needed to open the zipfile as a zip file, then iterate through all the files within that zip file using zipfile.namelist. Then I needed to open all of the files and read them, making sure I decoded them in the right way (using utf-8)
+Below are some external resources I used to help me understand some of python's unfamiliar classes/libraries:
+https://docs.python.org/2/library/collections.html 
+https://docs.python.org/3/library/re.html
+https://docs.python.org/3/library/zipfile.html
+https://docs.python.org/2/library/sets.html
+https://docs.python.org/3/howto/unicode.html

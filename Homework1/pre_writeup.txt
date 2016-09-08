@@ -1,0 +1,27 @@
+all_states(lines)
+	Simply iterated over all the lines in the document, if the value for "STATE" was unique I returned it, otherwise I kept going
+	JUST KIDDING THAT DIDN'T work!!! expecting a set as the return thing-> the only way to do that is to iterate over the whole group of lines within creating the set, so that's what I did. :)
+
+all_state_rows(lines,state)
+	This one was simple in this function, simply checked if the states matched, and if they did I returned that state's line BUT the tricky part came from the function district_margins(statelines) -> this one recognized that some of the states' "D" column wasn't clean, so I had to clean it by removing extraneous details to get this method to pass -> no longer had to do this once they corrected the file uploaded to github (maybe include it in the writeup for context/to show you could recognize how to clean the data if need be)
+
+district_margins(state_lines)
+	This function was much trickier (and current implementation is suppppppper inefficient). Basically I created a new function that took in took as arguments all the lines for that state and the district we were looking at then just went through and found the greatest percentage of general votes and the second greatest and found the difference between the two. This isn't great though because it just passes all the data off to another function, doesn't do it functionally, and it calculates it for every row for the state (not just once per district). These are both things to fix once I have everything else working.
+
+	So I thought that was done, but we had this weirdness where it would only process districts 1 or 0 (why?? Who knows....). SOOOO I completely scrapped that and just did a really messy imperative programming for loop. Current status: messing up on west virginia for some reason and has an error when you run the tests so check those two things out.
+	Needed to make sure there was more than one entry per district, otherwise set it equal to 100. Seems to be working correctly? Let's hope so when I get the grading script?
+	Also needed to account for FULL TERM and UNEXPIRED TERM: only looked at full term data, otherwise it compared the same candidates
+
+WORD_COUNTS:
+words(text)
+	This function was really easy once I noticed the regex matching expression and looked up documentation on python's regex library. It was a simple "find all" words that matched that sequence in the lowercase version of that text
+
+text_from_zipfile(zipfile)
+	I needed to open the zipfile as a zip file, then iterate through all the files within that zip file using zipfile.namelist. Then I needed to open all of the files and read them, making sure I decoded them in the right way (using utf-8)
+
+External Resources:
+https://docs.python.org/2/library/collections.html 
+https://docs.python.org/3/library/re.html
+https://docs.python.org/3/library/zipfile.html
+https://docs.python.org/2/library/sets.html
+https://docs.python.org/3/howto/unicode.html

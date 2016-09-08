@@ -1,3 +1,8 @@
+# Jessica Petty
+# CSCI 3022
+# Homework 1
+# September 8, 2016
+
 from collections import Counter
 from zipfile import ZipFile
 import re
@@ -9,14 +14,12 @@ def text_from_zipfile(zip_file):
     Given a zip file, yield an iterator over the text in each file in the
     zip file.
     """
-    # Modify this function
     with ZipFile(zip_file,'r') as myzip:
         files = myzip.namelist()
         for curr_file in files:
             if "README" not in curr_file:
                 with myzip.open(curr_file) as speech:
                     yield speech.read().decode("utf-8","ignore")
-    #return ["nope"]
 
 def words(text):
     """
@@ -35,19 +38,14 @@ def accumulate_counts(words, total=Counter()):
     @total The total counter we should add the counts to
     """
     assert isinstance(total, Counter)
-
-    # Modify this function    
+    for word in words:
+        total[word] += 1
     return total
 
 if __name__ == "__main__":
     # You should not need to modify this part of the code
     total = Counter()
     for tt in text_from_zipfile("../data/state_union.zip"):
-        #word_call = words(tt)
-        #for word in word_call:
-        #    print(word)
-        #total = accumulate_counts(word_call, total)
-        print(tt)
         total = accumulate_counts(words(tt), total)
 
     for ii, cc in total.most_common(100):
