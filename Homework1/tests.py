@@ -50,7 +50,7 @@ class TestWordCounts(unittest.TestCase):
         self.assertEqual(set(words("Yes, we can certainly find real words, Frank!")),
                          set(["certainly", "find", "real", "words", "frank"]))
 
-    def accumulate_counts(self):
+    def test_accumulate_counts(self):
         self.assertEqual(Counter(["a", "b", "c", "c"]),
                          accumulate_counts(["a", "b", "c", "c"]))
 
