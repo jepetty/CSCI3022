@@ -33,7 +33,7 @@ def ml_mean(values):
     """
 
     # Your code here
-    return 0.5
+    return sum(values)/len(values)
 
 def ml_variance(values, mean):
     """
@@ -46,7 +46,7 @@ def ml_variance(values, mean):
     """
 
     # Your code here
-    return 1.0
+    return sum((value-mean)**2 for value in values)/len(values)
 
 def log_probability(value, mean, variance):
     """
@@ -67,7 +67,8 @@ def republican_share(lines, states):
 
 if __name__ == "__main__":
     # Don't modify this code
-    lines = [x for x in DictReader(open("../data/2014_election_results.csv"))
+    ml_variance([0,100],50)
+    '''lines = [x for x in DictReader(open("../data/2014_election_results.csv"))
              if valid(x)]
 
     obama_mean = ml_mean(republican_share(lines, kOBAMA).values())
@@ -84,4 +85,4 @@ if __name__ == "__main__":
         obama_prob = log_probability(colorado[(co, dist)], obama_mean, obama_var)
         romney_prob = log_probability(colorado[(co, dist)], romney_mean, romney_var)
 
-        print("District %i\t%f\t%f" % (dist, obama_prob, romney_prob))
+        print("District %i\t%f\t%f" % (dist, obama_prob, romney_prob))'''
