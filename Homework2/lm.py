@@ -60,12 +60,11 @@ class BigramLanguageModel:
         
         # Add your code here!
         # Bigram counts
-        self._obs_counts = defaultdict(Counter)
         self._vocab_final = False
 
     def train_seen(self, word):
         """
-        Tells the language model that a word has been seen @count times.  This
+        Tells the language model that a word has been seen.  This
         will be used to build the final vocabulary.
         """
         assert not self._vocab_final, \

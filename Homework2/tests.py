@@ -29,11 +29,11 @@ class TestDistrictNormals(unittest.TestCase):
 
     def test_mean(self):
         vals = [0, 100]
-        self.assertAlmostEqual(ml_mean(vals), 50)
+        self.assertAlmostEqual(ml_mean(vals), 50, places=3)
 
     def test_variance(self):
         vals = [0, 100]
-        self.assertAlmostEqual(ml_variance(vals, 50), 2500)
+        self.assertAlmostEqual(ml_variance(vals, 50), 2500, places=3)
 
     def test_logprob(self):
         self.assertAlmostEqual(log_probability(-1.0, 0.0, 1.0),
@@ -42,7 +42,10 @@ class TestDistrictNormals(unittest.TestCase):
         
     def test_share(self):
         lines = list(DictReader(kALASKA))
-        self.assertEqual(republican_share(lines, ["Alaska"]), {("Alaska", 0): 50.97})
+        self.assertEqual(list(republican_share(lines, ["Alaska"]).keys()), 
+                         [("Alaska", 0)])
+        self.assertAlmostEqual(republican_share(lines, ["Alaska"])[("Alaska", 0)],
+                               50.97, places=1)
         self.assertEqual(republican_share(lines, ["Bliss"]), {})                         
 
 class TestLanguageModel(unittest.TestCase):
