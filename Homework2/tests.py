@@ -39,6 +39,9 @@ class TestDistrictNormals(unittest.TestCase):
         self.assertAlmostEqual(log_probability(-1.0, 0.0, 1.0),
                                log(0.24197072451914337),
                                places=3)
+        self.assertAlmostEqual(log_probability(-1.0, 0.0, 0.9),
+                                            -1.421813830931315,
+                                            places=3)
         
     def test_share(self):
         lines = list(DictReader(kALASKA))
@@ -48,51 +51,53 @@ class TestDistrictNormals(unittest.TestCase):
                                50.97, places=1)
         self.assertEqual(republican_share(lines, ["Bliss"]), {})                         
 
+
 class TestLanguageModel(unittest.TestCase):
     def test_vocab(self):
         lm = BigramLanguageModel()
         lm.train_seen("the")
         lm.finalize()
         self.assertEqual(lm.vocab(), [kEND, kSTART, "the"])
-                    
+    
     def test_logprob_single_word(self):
         lm = BigramLanguageModel()
         lm.train_seen("the")
         lm.finalize()
         lm.add_train("the")
         lm.add_train("")
-
+        
         self.assertAlmostEqual(lm.laplace("the", kEND), log(.5), places=3)
         self.assertAlmostEqual(lm.laplace(kSTART, "the"), log(.4), places=3)
-
+    
     def test_logprob_two_words(self):
-        lm = BigramLanguageModel()        
+        lm = BigramLanguageModel()
         lm.train_seen("the")
-        lm.train_seen("nation")        
+        lm.train_seen("nation")
         lm.finalize()
         lm.add_train("the nation")
         lm.add_train("nation")
-
+        
         self.assertAlmostEqual(lm.laplace("the", "nation"), log(2/5.), places=3)
         self.assertAlmostEqual(lm.laplace(kSTART, kEND), log(1/6.), places=3)
-
-        
+    
+    
     def test_generate(self):
         lm = BigramLanguageModel()
         lm.train_seen("likely")
         lm.train_seen("unlikely")
         lm.finalize()
-
+        
         for ii in range(10000):
             lm.add_train("likely")
-
+        
         count = Counter()
         for ii in range(100):
             sent = list(lm.sample(1))
             count[sent[1]] += 1
-            
+        
         self.assertTrue(count["likely"] > 98)
 
-                    
+
+
 if __name__ == '__main__':
     unittest.main()

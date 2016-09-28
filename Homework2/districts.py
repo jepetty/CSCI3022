@@ -1,6 +1,7 @@
-# Districts.py
-#
-# 
+# Jessica Petty
+# CSCI 3022
+# Assignment 2
+# September 29, 2016
 
 from csv import DictReader
 from collections import defaultdict
@@ -32,7 +33,6 @@ def ml_mean(values):
     outside core Python (sum and len are fine).
     """
 
-    # Your code here
     return sum(values)/len(values)
 
 def ml_variance(values, mean):
@@ -45,30 +45,33 @@ def ml_variance(values, mean):
     directly.  (And to be clear, you're not allowed to use them.)
     """
 
-    # Your code here
     return sum((value-mean)**2 for value in values)/len(values)
 
 def log_probability(value, mean, variance):
     """
-    Given a normal distribution with a given mean and varience, compute the
+    Given a normal distribution with a given mean and variance, compute the
     log probability of a value from that distribution.
     """
-
-    # Your code here
-    return 0.0
+    return  -0.5 *log(2*kPI*variance) - 1/(2*variance)*(value - mean)**2
 
 def republican_share(lines, states):
     """
     Return an iterator over the Republican share of the vote in all
     districts in the states provided.
     """
-    # Your code here
-    return {("Alaska", 0): 50.97}
+    
+    state_dict = {}
+    for x in lines:
+      if x["STATE"] and x["STATE"] in states:
+        if x["D"] and x["D"] != "H":
+          district = int(x["D"].replace(" - UNEXPIRED TERM", "").replace(" - FULL TERM", ""))
+          if x["PARTY"] == "R" and x["PRIMARY %"] != "":
+            state_dict[(x["STATE"], district)] = float(x["PRIMARY %"].replace(",", ".").replace("%",""))
+    return state_dict
 
 if __name__ == "__main__":
     # Don't modify this code
-    ml_variance([0,100],50)
-    '''lines = [x for x in DictReader(open("../data/2014_election_results.csv"))
+    lines = [x for x in DictReader(open("../data/2014_election_results.csv"))
              if valid(x)]
 
     obama_mean = ml_mean(republican_share(lines, kOBAMA).values())
@@ -85,4 +88,5 @@ if __name__ == "__main__":
         obama_prob = log_probability(colorado[(co, dist)], obama_mean, obama_var)
         romney_prob = log_probability(colorado[(co, dist)], romney_mean, romney_var)
 
-        print("District %i\t%f\t%f" % (dist, obama_prob, romney_prob))'''
+        print("District %i\t%f\t%f" % (dist, obama_prob, romney_prob))
+    #republican_share(lines, kOBAMA)
