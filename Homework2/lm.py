@@ -57,7 +57,8 @@ class BigramLanguageModel:
 
     def __init__(self):
         self._vocab = set([kSTART, kEND])
-        
+        self._bigrams = {}
+        self._word_count = 2
         # Add your code here!
         # Bigram counts
         self._vocab_final = False
@@ -70,7 +71,10 @@ class BigramLanguageModel:
         assert not self._vocab_final, \
             "Trying to add new words to finalized vocab"
 
-        # Add your code here!            
+        if word not in self._vocab:
+            self._vocab.add(word)
+            self._word_count = self._word_count + 1
+
 
     def generate(self, context):
         """
@@ -91,7 +95,6 @@ class BigramLanguageModel:
         length (plus start and end tags).
         """
 
-        # You should not need to modify this function
         yield kSTART
         next = kSTART
         for ii in range(sample_size):
@@ -108,8 +111,6 @@ class BigramLanguageModel:
         being added
         """
         
-        # you should not need to modify this function
-        
         self._vocab_final = True
 
     def tokenize_and_censor(self, sentence):
@@ -118,8 +119,6 @@ class BigramLanguageModel:
         Prefix the sentence with <s>, generate the words in the
         sentence, and end the sentence with </s>.
         """
-
-        # you should not need to modify this function
         
         yield kSTART
         for ii in tokenize(sentence):
@@ -144,9 +143,18 @@ class BigramLanguageModel:
         assert context in self._vocab, "%s not in vocab" % context
         assert word in self._vocab, "%s not in vocab" % word
 
+        #the nation
         # Add your code here
         val = 0.0
-        return val
+        total_count = 0
+        for con_word in self._bigrams[context]:
+            total_count = total_count + self._bigrams[context][con_word]
+        if word in self._bigrams[context]:
+            word_count = self._bigrams[context][word]
+        else:
+            word_count = 0
+        val = (word_count + 1)/(total_count + self._word_count)
+        return log(val)
 
     def add_train(self, sentence):
         """
@@ -159,19 +167,53 @@ class BigramLanguageModel:
             None
             # ---------------------------------------
             assert word in self._vocab, "%s not in vocab" % word
+            assert context in self._vocab, "%s not in vocab" % context
+            if context in self._bigrams:
+                if word in self._bigrams[context]:
+                    self._bigrams[context][word] = self._bigrams[context][word] + 1
+                else:
+                    self._bigrams[context][word] = 1
+            else:
+                self._bigrams[context] = {word: 1}
 
     def log_likelihood(self, sentence):
         """
         Compute the log likelihood of a sentence, divided by the number of
         tokens in the sentence.
         """
-        
-        return 0.0
+        # you need to do stuff bitch
+        #sent = tokenize(sentence)
+        sent = self.tokenize_and_censor(sentence)
+        prob = 0
+        first = True
+        total = 0
+        for word in sent:
+            total = total + 1
+            if first:
+                first = False
+            else:
+                prob = prob + self.laplace(prev_word, word)
+            prev_word = word
+        return prob/total
 
 
 if __name__ == "__main__":
     dem_lm = BigramLanguageModel()
     rep_lm = BigramLanguageModel()
+    '''dem_lm.train_seen("the")
+    dem_lm.train_seen("nation")
+    dem_lm.finalize()
+    dem_lm.add_train("the nation")
+    dem_lm.add_train("nation")
+    dem_lm.laplace("the","nation")
+    sent = "hi my name is jessica and i am happy jessica is happy jessica is awesome"
+    for word in tokenize(sent):
+        dem_lm.train_seen(word)
+    dem_lm.finalize()
+    dem_lm.add_train(sent)
+    new_sent = "jessica is awesome"
+    print(dem_lm.laplace("jessica", "is"))
+    print(dem_lm.log_likelihood(new_sent))'''
 
     for target, pres, name in [(dem_lm, kDEM, "D"), (rep_lm, kREP, "R")]:
         for sent in sentences_from_zipfile("../data/state_union.zip", pres):

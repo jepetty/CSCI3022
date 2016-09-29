@@ -12,3 +12,16 @@ log_probability:
 	Also pretty simple given the equation for proability of a Normal variable. Just returned this probability with values substituted in for appropriate variables.
 republican_share:
 	This method was also not too challenging. I created a dictionary to store the tuple of (state, district) with the value of the republican percentage for that entry (only if the entry corresponded to a republican candidate). With a little bit of data cleaning to cast the strings to the appropriate data type, it was not too challenging!!
+
+train_seen:
+	For this method, I just check if the word is in the given list. If it isn't, then I add it to the set.
+add_train:
+	My current strategy for this method is to create a dictionary of dictionaries. The keys of the first dictionary give a second dictionary in which the keys are the seen words and the value is the count.
+laplace: 
+	Important thing to remember was using the smoothing stuff associated with laplace. Basically, with +1 smoothing, add one to the total count of the word you're seeking for and then add the total number of words in the language to the total number of times you see the context (ie the denominator)
+log_likelihood:
+	This one was pretty simple -> just add up the all of the probabilities for all the bigrams in the sentence (log probability makes this a summation instead of a product)
+
+Resource:
+http://www.ee.columbia.edu/~stanchen/e6884/labs/lab3/x160.html
+https://en.wikipedia.org/wiki/Normal_distribution
