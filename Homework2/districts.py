@@ -59,14 +59,19 @@ def republican_share(lines, states):
     Return an iterator over the Republican share of the vote in all
     districts in the states provided.
     """
-    
+
     state_dict = {}
     for x in lines:
       if x["STATE"] and x["STATE"] in states:
         if x["D"] and x["D"] != "H":
           district = int(x["D"].replace(" - UNEXPIRED TERM", "").replace(" - FULL TERM", ""))
-          if x["PARTY"] == "R" and x["PRIMARY %"] != "":
-            state_dict[(x["STATE"], district)] = float(x["PRIMARY %"].replace(",", ".").replace("%",""))
+          if x["PARTY"] == "R" and x["GENERAL %"] != "":
+            primary_count = float(x["GENERAL %"].replace(",",".").replace("%",""))
+            if (x["STATE"], district) in state_dict:
+              if primary_count > state_dict[(x["STATE"], district)]:
+                state_dict[(x["STATE"], district)] = primary_count
+            else:
+              state_dict[(x["STATE"], district)] = primary_count
     return state_dict
 
 if __name__ == "__main__":
