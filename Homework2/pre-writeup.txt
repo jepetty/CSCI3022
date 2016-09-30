@@ -1,0 +1,49 @@
+Jessica Petty
+CSCI 3022
+Assignment 2
+September 29, 2016
+
+MY APPROACH
+ml_mean:
+	This method was pretty simple, just found the sum of whatever was passed in and divided by the length of that array
+ml_variance:
+	This method was also pretty simple. Did some functional programming to to find the square of the difference between each value and the mean, then returned this value divided by the total number of values input
+log_probability:
+	Also pretty simple given the equation for proability of a Normal variable. Just returned this probability with values substituted in for appropriate variables.
+republican_share:
+	This method was also not too challenging. I created a dictionary to store the tuple of (state, district) with the value of the republican percentage for that entry (only if the entry corresponded to a republican candidate). With a little bit of data cleaning to cast the strings to the appropriate data type, it was not too challenging!!
+
+train_seen:
+	For this method, I just check if the word is in the given list. If it isn't, then I add it to the set.
+add_train:
+	My current strategy for this method is to create a dictionary of dictionaries. The keys of the first dictionary give a second dictionary in which the keys are the seen words and the value is the count.
+laplace: 
+	Important thing to remember was using the smoothing stuff associated with laplace. Basically, with +1 smoothing, add one to the total count of the word you're seeking for and then add the total number of words in the language to the total number of times you see the context (ie the denominator)
+log_likelihood:
+	This one was pretty simple -> just add up the all of the probabilities for all the bigrams in the sentence (log probability makes this a summation instead of a product)
+generate:
+	For this method I utilized some things I learned in Markov Processes: I converted all probabilities to their real numerical values (not log probabilities), simulated a random variable U~Uniform(0,total_probability) and then used this value to decide which word is to be chosen next
+
+democrat sentences:
+	We must cut down inflation the months have completed
+	He surely was rising tide is not haunted by
+	Hospital construction of what
+republican sentences:
+	The world cannot live more communities around this
+	A government is done to receive social unrest
+	Cutting back of weakening standards for economic recovery
+	I don't mind
+
+First Obama word:
+
+First Obama bigram:
+	been that
+	new citizen
+	so hopeful
+	confident as
+
+Resources:
+http://www.ee.columbia.edu/~stanchen/e6884/labs/lab3/x160.html
+https://en.wikipedia.org/wiki/Normal_distribution
+https://docs.python.org/2/library/random.html
+https://docs.python.org/3/tutorial/errors.html

@@ -33,6 +33,7 @@ def ml_mean(values):
     outside core Python (sum and len are fine).
     """
 
+    # return the equation for mean
     return sum(values)/len(values)
 
 def ml_variance(values, mean):
@@ -45,6 +46,7 @@ def ml_variance(values, mean):
     directly.  (And to be clear, you're not allowed to use them.)
     """
 
+    # return the equation for variance
     return sum((value-mean)**2 for value in values)/len(values)
 
 def log_probability(value, mean, variance):
@@ -52,6 +54,8 @@ def log_probability(value, mean, variance):
     Given a normal distribution with a given mean and variance, compute the
     log probability of a value from that distribution.
     """
+
+    # return the log probability (a sum instead of a product)
     return  -0.5 *log(2*kPI*variance) - 1/(2*variance)*(value - mean)**2
 
 def republican_share(lines, states):
@@ -63,10 +67,13 @@ def republican_share(lines, states):
     state_dict = {}
     for x in lines:
       if x["STATE"] and x["STATE"] in states:
+        # check district is valid
         if x["D"] and x["D"] != "H":
           district = int(x["D"].replace(" - UNEXPIRED TERM", "").replace(" - FULL TERM", ""))
+          # if it's a republican candidate
           if x["PARTY"] == "R" and x["GENERAL %"] != "":
             primary_count = float(x["GENERAL %"].replace(",",".").replace("%",""))
+            # we need to check if it's the highest vote for a republican candidate, then add it
             if (x["STATE"], district) in state_dict:
               if primary_count > state_dict[(x["STATE"], district)]:
                 state_dict[(x["STATE"], district)] = primary_count
@@ -94,4 +101,6 @@ if __name__ == "__main__":
         romney_prob = log_probability(colorado[(co, dist)], romney_mean, romney_var)
 
         print("District %i\t%f\t%f" % (dist, obama_prob, romney_prob))
-    #republican_share(lines, kOBAMA)
+
+
+

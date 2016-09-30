@@ -4,24 +4,45 @@ Assignment 2
 September 29, 2016
 
 MY APPROACH
-ml_mean:
-	This method was pretty simple, just found the sum of whatever was passed in and divided by the length of that array
-ml_variance:
-	This method was also pretty simple. Did some functional programming to to find the square of the difference between each value and the mean, then returned this value divided by the total number of values input
-log_probability:
-	Also pretty simple given the equation for proability of a Normal variable. Just returned this probability with values substituted in for appropriate variables.
-republican_share:
-	This method was also not too challenging. I created a dictionary to store the tuple of (state, district) with the value of the republican percentage for that entry (only if the entry corresponded to a republican candidate). With a little bit of data cleaning to cast the strings to the appropriate data type, it was not too challenging!!
+For this assignment, I chose to start by implementing all the methods required of us and then moving on to the components required for the write up (like the information about Colorado's districts, Obama's speech, and the histogram).
 
-train_seen:
-	For this method, I just check if the word is in the given list. If it isn't, then I add it to the set.
-add_train:
-	My current strategy for this method is to create a dictionary of dictionaries. The keys of the first dictionary give a second dictionary in which the keys are the seen words and the value is the count.
-laplace: 
-	Important thing to remember was using the smoothing stuff associated with laplace. Basically, with +1 smoothing, add one to the total count of the word you're seeking for and then add the total number of words in the language to the total number of times you see the context (ie the denominator)
-log_likelihood:
-	This one was pretty simple -> just add up the all of the probabilities for all the bigrams in the sentence (log probability makes this a summation instead of a product)
+I started with the file districts.py. This file was not terribly challenging to implement. First I did ml_mean, in which I simply returned the sum of the values divided by the length of the values (simple one-liner). Then, I implemented ml_variance, which was another simple one-liner, returning the square of the difference between each value and the mean divided by the toal number of values. Finally, I implemented log_probability, which was another one-liner that was not challenging given the probability density function of the Normal distribution and knowledge about log rules. In this method, I returned the log of this density function with the parameters inserted at the appropriate locations. Finally, I implemented republican_share, which seemed basically like an easier iteration on some of the questions we solved for Homework 1. I looped through all the lines, and if the "GENERAL %" for a candidate with a party affiliation of "R" was greater than any general % I had seen for a republican in the given state and district, I updated a dictionary with this larger value (or, if I hadn't seen a republican candidate for that state and district, I added the "GENERAL %" to a dictionary with the key (state, district)).
 
-Resource:
+After this, I started on lm.py, which was admittedly more complicated and challenging than districts.py. I didn't really know where to start, so I chose to follow the order in which functions were called in the main function. So, I started with train_seen. Initially, I just checked to see if a value was in the list of vocabulary that we had, but then once I started generate I realized I wanted to be able to access the count of each word, so I went back and added to components to the class object: a total word count and a dictionary storing the counts associated with each word. Then, in train_seen I updated these counts as appropriate. After that, the next function in main and the next function I completed was add_train. For this method I created a dictionary of dictionaries to store the pair (context, word) and then the count associated with each of those (i.e. dict[context][word] = count("context word")). This function then, with that data type, was not very challenging-I justed incremented the count for each context word pair, or added it to the dictionary if it was previously unseen.
+
+Then, from there, I moved on to the method laplace. This method was not challenging so long as one had the equation for laplace smoothing. It took me a while to figure out this equation ((count(seek_word) + 1)/(count(words_in_context + total_words))), but once I had that I just found the total count of words appearing after a given context and found how many times the word we were looking for appeared after the given context, then returned a log of the above equation. After I completed my functions, I did come back and add an array of bigrams associated with Obama, adding them to this array in the laplace method if I had never seen that specific bigram before. log_likelihood was quite simple once laplace was completed; I just looped through the sentence and found the laplace value for each (word, next_word) pair and updated a counter with this value. The generate method could have been trickier, but I'm in Markov Processes so I know how to simulate a distribution from a random variable. I simulated U~Uniform, then went through all the probabilities of the next work for a given context. If U < prob, I returned that word, otherwise I incremented a counter of total probability by the probability of that word and tried again. If that word didn't have a next expected word, I just returned the most common word ("the"). One thing that threw me off for a bit was I assumed the probability would sum to 1, so I made my U~Uniform(0,1). When I realized that wasn't the case, I made U~Uniform(0, total_probability) and achieved much better results. 
+
+COLORADO'S DISTRICTS
+Colorado's Congressional districts do look more like the Congressional districts of states that Obama won. Although there are some districts that favor Romney, this was actually quite common in the Obama states. The main determinant was both that the highest percentage of favor for Romney was, while high, not as high as was typical for a Romney state. Additionally, Colorado had the low-Romney-support of District 1 which was typical of an Obama state.
+To accomplish this part, I examined the histogram I created in accordance with Colorado's district percentage break-down. Additionally, I printed the breakdown between Obama and Romney percentage in the individual states won by each candidate and examined which set most resembled Colorado's Congressional districs.
+
+OBAMA VS ROMNEY STATES
+Please see the included histogram.png for this discussion. It does seem like for those states which voted Romney, the percent of voters who voted for the republican candidate follows a fairly Normal distribution (which makes sense: you would expect to see an average percentage and then states on either side of that). It isn't perfect, but it is roughly Normal, with a tail to the left (which also makes sense-one would expect the republican average to be higher in Romney states which allows more room for outliers/different percentages below the average than above). Now, the republican percentage of the vote in states which voted Obama does not seem to follow a Normal distribution as closely. The combination of the two sets of states (Romney and Obama states) is clearly not Normal, as it has two distinct peaks representing the average for each candidate. Overall though, one would expect that the percent of a state that votes for a certain political party would follow a fairly Normal distribution.
+To accomplish this, I used matplotlib and the histogram functionality in the main function of my districts.py file.
+
+OBAMA
+Obama had some very interesting words which he was the first president to say in his State of the Union. Some of these words include "latino", "contradicts", and "dreamer". He also had some very interesting bigrams (and a lot more of these!). Some of them include "so hopeful", "bipartisan reform", and "nation attacks". 
+To accomplish finding Obama's unique words and bigrams, I modified the functions "laplace" and "main" in lm.py, and additionally I added a new field to the BigramLanguageModel class to store Obama's bigrams.
+
+GENERATED SENTENCES
+I generated a number of sentences of various lengths for both parties. Below, I list some of my favorites for each party.
+Republican:
+"The world cannot live more communities around this"
+"A government is done to receive social unrest"
+"Cutting back of weakening standards for economic recovery"
+"I don't mind"
+Democratic:
+"We must cut down inflation the months have completed"
+"He surely was rising tide is not haunted by"
+"Hospital construction of what"
+To generate these sentences I simply called BigramLanguageModel.sample in my main function with various sizes for the sentence size.
+
+ONLINE RESOURCES:
 http://www.ee.columbia.edu/~stanchen/e6884/labs/lab3/x160.html
 https://en.wikipedia.org/wiki/Normal_distribution
+https://docs.python.org/2/library/random.html
+https://docs.python.org/3/tutorial/errors.html
+http://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html
+http://matplotlib.org/users/legend_guide.html
+http://matplotlib.org/api/pyplot_api.html
+

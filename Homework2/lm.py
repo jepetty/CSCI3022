@@ -1,6 +1,12 @@
+# Jessica Petty
+# CSCI 3022
+# September 29, 2016
+# Assignment 2
+
 from math import log, exp
 from collections import defaultdict, Counter
 from zipfile import ZipFile
+from random import uniform
 import re
 
 kNEG_INF = -1e6
@@ -59,8 +65,8 @@ class BigramLanguageModel:
         self._vocab = set([kSTART, kEND])
         self._bigrams = {}
         self._word_count = 2
-        # Add your code here!
-        # Bigram counts
+        self._counted = {}
+        self._obama_bigram = []
         self._vocab_final = False
 
     def train_seen(self, word):
@@ -71,9 +77,13 @@ class BigramLanguageModel:
         assert not self._vocab_final, \
             "Trying to add new words to finalized vocab"
 
+        # add new words, keep track of count for words and total unique words
         if word not in self._vocab:
             self._vocab.add(word)
+            self._counted[word] = 1
             self._word_count = self._word_count + 1
+        else:
+            self._counted[word] = self._counted[word] + 1
 
 
     def generate(self, context):
@@ -82,12 +92,33 @@ class BigramLanguageModel:
         conditional language model probability.  
         """
 
-        # Add your code here.  Make sure to the account for the case
-        # of a context you haven't seen before and Don't forget the
-        # smoothing "+1" term while sampling.
+        probs = {}
+        total_prob = 0
+        for word in self._bigrams[context]:
+            # calculate the probability of a word given a context
+            probs[word] = exp(self.laplace(context,word))
+            # keep track of the total probability
+            total_prob = total_prob + probs[word]
+        # generate a uniform variable to perform simulation
+        u = uniform(0, total_prob)
+        prob = 0
+        # picture this like a timeline -> keep moving up the timeline to a new
+        # word until our uniform variable is in a section owned by a word
+        for word in probs:
+            prob = prob + probs[word]
+            if u < prob:
+                return word
 
-        # Your code here
-        return "the"
+        # case for when there is no predefined words following this context
+        return_word = ""
+        max_value = -1
+        for word in self._counted:
+            if self._counted[word] > max_value:
+                # we'll just return the word seen the most often (many ways to do this)
+                return_word = word
+                max_value = self._counted[word]
+        return return_word
+
             
     def sample(self, sample_size):
         """
@@ -143,16 +174,19 @@ class BigramLanguageModel:
         assert context in self._vocab, "%s not in vocab" % context
         assert word in self._vocab, "%s not in vocab" % word
 
-        #the nation
-        # Add your code here
         val = 0.0
         total_count = 0
         for con_word in self._bigrams[context]:
+            # find the total number of words associated with a context
             total_count = total_count + self._bigrams[context][con_word]
+        # if the word is known, get it's count, otherwise set to 0
         if word in self._bigrams[context]:
             word_count = self._bigrams[context][word]
         else:
             word_count = 0
+            # we've never seen this bigram -> track that Obama was the first to use it
+            self._obama_bigram.append([context, word])
+        # val is defined by the laplace smoothing equation
         val = (word_count + 1)/(total_count + self._word_count)
         return log(val)
 
@@ -161,19 +195,19 @@ class BigramLanguageModel:
         Add the counts associated with a sentence.
         """
 
-        # You'll need to complete this function, but here's a line of code that
-        # will hopefully get you started.
+        # make a count of all (context, word)
         for context, word in bigrams(list(self.tokenize_and_censor(sentence))):
-            None
-            # ---------------------------------------
             assert word in self._vocab, "%s not in vocab" % word
             assert context in self._vocab, "%s not in vocab" % context
             if context in self._bigrams:
                 if word in self._bigrams[context]:
+                    # if we've already seen this (context, word) increment it
                     self._bigrams[context][word] = self._bigrams[context][word] + 1
                 else:
+                    # if we've never seen this word with this context, add it
                     self._bigrams[context][word] = 1
             else:
+                # if we've never seen this countext, create it
                 self._bigrams[context] = {word: 1}
 
     def log_likelihood(self, sentence):
@@ -181,16 +215,17 @@ class BigramLanguageModel:
         Compute the log likelihood of a sentence, divided by the number of
         tokens in the sentence.
         """
-        # you need to do stuff bitch
-        #sent = tokenize(sentence)
+
         sent = self.tokenize_and_censor(sentence)
         prob = 0
         first = True
         total = 0
         for word in sent:
             total = total + 1
+            # we need to check if it's the first word to do nothing
             if first:
                 first = False
+            # otherwise add this word's probability to the total probability
             else:
                 prob = prob + self.laplace(prev_word, word)
             prev_word = word
@@ -200,20 +235,6 @@ class BigramLanguageModel:
 if __name__ == "__main__":
     dem_lm = BigramLanguageModel()
     rep_lm = BigramLanguageModel()
-    '''dem_lm.train_seen("the")
-    dem_lm.train_seen("nation")
-    dem_lm.finalize()
-    dem_lm.add_train("the nation")
-    dem_lm.add_train("nation")
-    dem_lm.laplace("the","nation")
-    sent = "hi my name is jessica and i am happy jessica is happy jessica is awesome"
-    for word in tokenize(sent):
-        dem_lm.train_seen(word)
-    dem_lm.finalize()
-    dem_lm.add_train(sent)
-    new_sent = "jessica is awesome"
-    print(dem_lm.laplace("jessica", "is"))
-    print(dem_lm.log_likelihood(new_sent))'''
 
     for target, pres, name in [(dem_lm, kDEM, "D"), (rep_lm, kREP, "R")]:
         for sent in sentences_from_zipfile("../data/state_union.zip", pres):
@@ -228,7 +249,7 @@ if __name__ == "__main__":
     
         print("Trained language model for %s" % name)
 
-    with open("../data/2016-obama.txt") as infile:
+    with open("../data/2016-obama.txt", encoding='utf8') as infile:
         print("REP\t\tDEM\t\tSentence\n" + "=" * 80)
         for ii in infile:
             if len(ii) < 15: # Ignore short sentences
@@ -240,5 +261,6 @@ if __name__ == "__main__":
                 print("%f\t%f\t%s" % (dem_score, rep_score, ii.strip()))
             except OutOfVocab:
                 None
+
             
             
