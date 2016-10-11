@@ -1,3 +1,5 @@
 degrees_of_freedom:
 	Pretty simple using the formula, note formula is standard deviation => don't need to square the variance
 
+unbiased_sample_variance:
+	Also not challenging once you have the formula. Make sure you do unbiased and not regular.

@@ -23,7 +23,7 @@ def unbiased_sample_variance(observations, mean):
     @param mean The estimated mean
     """
     
-    return 0
+    return sum((y-mean)**2 for y in observations)/(len(observations) - 1)
 
 def t_statistic(mean1, mean2, n1, n2, svar1, svar2):
     """
