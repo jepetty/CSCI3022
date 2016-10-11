@@ -13,8 +13,7 @@ def degrees_of_freedom(s1, s2, n1, n2):
     @param n2 The number of observations in the second sample
     """
 
-
-    return 0.0
+    return (s1/n1 + s2/n2)**2/((s1/n1)**2/(n1-1) + (s2/n2)**2/(n2-1))
 
 def unbiased_sample_variance(observations, mean):
     """
