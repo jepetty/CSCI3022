@@ -10,7 +10,8 @@ t_statistic:
 t_test:
 	This one was fairly trivial if you knew the formulas for everything. First, calculate the means and variances for both distributions. Then, use these and the two samples to calculate the t statistic (using the function I already wrote) and the degrees of freedom (again, using the function I already wrote). The trickiest part was actually learning enough about the scipy.stats.t library to calculate the p-value. This requires the t statistic and then the degrees of freedom plus one. After that, the p-value is twice times this number subtracted from one. 
 
-
+chisquare_pvalue:
+	This one wasn't terribly tricky knowing the formula for chi square value of a table of observed and expected values. One thing that helped here was knowing that it was just a 2x2 table. 
 
 
 

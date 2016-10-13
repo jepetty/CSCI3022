@@ -63,8 +63,11 @@ def chisquare_pvalue(obs, ex):
     @param obs An array (list of lists or numpy array) of expected values
     """
 
-
-    return 1.0
+    sum = 0
+    for i in range(0,2):
+        for j in range(0,2):
+            sum = sum + (obs[i][j] - ex[i][j])**2/ex[i][j]
+    return sum
 
 class BigramFinder:
     """
