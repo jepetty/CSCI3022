@@ -13,6 +13,12 @@ t_test:
 chisquare_pvalue:
 	This one wasn't terribly tricky knowing the formula for chi square value of a table of observed and expected values. One thing that helped here was knowing that it was just a 2x2 table. 
 
+add_sentence:
+	I just looped through all the bigrams, made sure each word in the bigram was in the vocabulary, then added counts to a dictionary where the first key was the second word and the value was another dictionary where the first word was the key and the count of that bigram was the value
+
+valid_bigrams:
+	Just looped through the dictionary of dictionaries of counts I made in add_sentence, made sure the count was greater than or equal to the minimum allowed count, then returned an array of the bigrams as a tuple.
+
 
 
 

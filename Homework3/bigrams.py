@@ -95,10 +95,12 @@ class BigramFinder:
         self._min_ngram = min_ngram
 
         self._vocab = None
+        self._bigram = {}
 
         # You may want to add additional data structures here.
 
         self._unigram = Counter()
+        self._bigram_count = Counter()
 
     def observed_and_expected(self, bigram):
         """
@@ -167,19 +169,30 @@ class BigramFinder:
         """
         assert self._vocab is not None, "Adding counts before finalizing vocabulary"
         
-        # Your code here
         for ll, rr in bigrams(sentence):
-            None
-            # Your code here
+            if (ll in self._vocab) & (rr in self._vocab):
+                assert ll in self._vocab, "%s not in vocab" % ll
+                assert rr in self._vocab, "%s not in vocab" % rr
+                self._bigram_count[(ll, rr)] += 1
+                if rr in self._bigram:
+                    if ll in self._bigram[rr]:
+                        self._bigram[rr][ll] = self._bigram[rr][ll] + 1
+                    else:
+                        self._bigram[rr][ll] = 1
+                else:
+                    self._bigram[rr] = {ll:1}
 
     def valid_bigrams(self):
         """
         Return an iterator over the bigrams that have been seen enough to get a
         score.
         """
-        
-        # Your code here
-        return []
+        valid_grams = []
+        for rr in self._bigram:
+            for ll in self._bigram[rr]:
+                if self._bigram[rr][ll] >= self._min_ngram:
+                    valid_grams.append((ll,rr))
+        return valid_grams
         
     def sorted_bigrams(self):
         """
