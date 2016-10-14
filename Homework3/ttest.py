@@ -1,3 +1,8 @@
+# Jessica Petty
+# CSCI 3022
+# Homework 3
+# October 13, 2016
+
 from math import sqrt
 
 from scipy.stats import t

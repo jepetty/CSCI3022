@@ -1,3 +1,7 @@
+# Jessica Petty
+# CSCI 3022
+# Homework 3
+# October 13, 2016
 import re
 import operator
 from collections import Counter
@@ -98,7 +102,6 @@ class BigramFinder:
 
         self._vocab = None
         self._bigram_reverse = {}
-        self._bigram = {}
 
         # You may want to add additional data structures here.
 
@@ -200,13 +203,6 @@ class BigramFinder:
                         self._bigram_reverse[rr][ll] = 1
                 else:
                     self._bigram_reverse[rr] = {ll:1}
-                if ll in self._bigram:
-                    if rr in self._bigram[ll]:
-                        self._bigram[ll][rr] = self._bigram[ll][rr] + 1
-                    else:
-                        self._bigram[ll][rr] = 1
-                else:
-                    self._bigram[ll] = {rr:1}
 
     def valid_bigrams(self):
         """
