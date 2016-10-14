@@ -11,7 +11,7 @@ t_test:
 	This one was fairly trivial if you knew the formulas for everything. First, calculate the means and variances for both distributions. Then, use these and the two samples to calculate the t statistic (using the function I already wrote) and the degrees of freedom (again, using the function I already wrote). The trickiest part was actually learning enough about the scipy.stats.t library to calculate the p-value. This requires the t statistic and then the degrees of freedom plus one. After that, the p-value is twice times this number subtracted from one. 
 
 chisquare_pvalue:
-	This one wasn't terribly tricky knowing the formula for chi square value of a table of observed and expected values. One thing that helped here was knowing that it was just a 2x2 table. 
+	This one wasn't terribly tricky knowing the formula for chi square value of a table of observed and expected values. One thing that helped here was knowing that it was just a 2x2 table. Then I called chi2.cdf and subtracted it from 1 to get the p-value for that t-statistic.
 
 add_sentence:
 	I just looped through all the bigrams, made sure each word in the bigram was in the vocabulary, then added counts to a dictionary where the first key was the second word and the value was another dictionary where the first word was the key and the count of that bigram was the value
@@ -19,6 +19,8 @@ add_sentence:
 valid_bigrams:
 	Just looped through the dictionary of dictionaries of counts I made in add_sentence, made sure the count was greater than or equal to the minimum allowed count, then returned an array of the bigrams as a tuple.
 
+observed_and_expected:
+	This one by far gave me the most trouble out of any function. Eventually though after much trial and error I uncovered some mistakes and came to the right solution. First I added some counters to the class to help myself: a count of the left word, a count of the right word, and a count of the bigram. I added incrementing them to the add_sentence method, but one mistake I made that caused me a lot of pain was I had to make sure to count for all words and bigrams, not just the ones that met the specifications. From there, the expected matrix was pretty simple: P(x,y) = P(x)P(y) for two independent quantities, then multiply by the total number of bigrams to get the expected count. Observed was less challenging once I got the left count and the right count dictionaries going: it was just right count of word - bigram count, left count of word - bigram count, and total bigram count - all counts seen.
 
 
 

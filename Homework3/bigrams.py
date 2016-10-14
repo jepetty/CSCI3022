@@ -6,6 +6,7 @@ from zipfile import ZipFile
 from numpy import array
 from scipy import zeros
 from scipy.stats import chisquare
+from scipy.stats.distributions import chi2
 
 kWORDS = re.compile("[a-z]{1,}")
 kSTOPWORDS = set(['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'yo',
@@ -63,11 +64,12 @@ def chisquare_pvalue(obs, ex):
     @param obs An array (list of lists or numpy array) of expected values
     """
 
-    sum = 0
+    _sum = 0
     for i in range(0,2):
         for j in range(0,2):
-            sum = sum + (obs[i][j] - ex[i][j])**2/ex[i][j]
-    return sum
+            _sum = _sum + (obs[i][j] - ex[i][j])**2/ex[i][j]
+    chi = 1 - chi2.cdf(_sum,1)
+    return chi
 
 class BigramFinder:
     """
@@ -95,12 +97,15 @@ class BigramFinder:
         self._min_ngram = min_ngram
 
         self._vocab = None
+        self._bigram_reverse = {}
         self._bigram = {}
 
         # You may want to add additional data structures here.
 
         self._unigram = Counter()
         self._bigram_count = Counter()
+        self._bigram_left = Counter()
+        self._bigram_right = Counter()
 
     def observed_and_expected(self, bigram):
         """
@@ -108,11 +113,23 @@ class BigramFinder:
 
         @bigram A tuple containing the words to score
         """
+        #***** total bigram count correct, obs1, obs3 *******
 
-        obs = zeros((2, 2))
+        ll, rr = bigram
+        total_bigram_count = sum(self._bigram_count.values())
+
+        obs1 = self._bigram_reverse[rr][ll]
+        obs2 = self._bigram_right[rr] - self._bigram_reverse[rr][ll]
+        obs3 = self._bigram_left[ll] - self._bigram_reverse[rr][ll]
+        obs4 = total_bigram_count - obs1 - obs3 - obs2
+        obs = array([[obs1, obs2], [obs3, obs4]])
 
 
-        ex = zeros((2, 2))
+        ex1 = (self._bigram_left[ll]*self._bigram_right[rr])/total_bigram_count
+        ex2 = ((total_bigram_count - self._bigram_left[ll])*self._bigram_right[rr])/total_bigram_count
+        ex3 = (self._bigram_left[ll]*(total_bigram_count - self._bigram_right[rr]))/total_bigram_count
+        ex4 = ((total_bigram_count - self._bigram_left[ll])*(total_bigram_count - self._bigram_right[rr]))/total_bigram_count
+        ex = array([[ex1, ex2], [ex3, ex4]])
 
         return obs, ex
         
@@ -170,17 +187,26 @@ class BigramFinder:
         assert self._vocab is not None, "Adding counts before finalizing vocabulary"
         
         for ll, rr in bigrams(sentence):
+            self._bigram_count[(ll,rr)] += 1
+            self._bigram_left[ll] += 1
+            self._bigram_right[rr] += 1
             if (ll in self._vocab) & (rr in self._vocab):
                 assert ll in self._vocab, "%s not in vocab" % ll
                 assert rr in self._vocab, "%s not in vocab" % rr
-                self._bigram_count[(ll, rr)] += 1
-                if rr in self._bigram:
-                    if ll in self._bigram[rr]:
-                        self._bigram[rr][ll] = self._bigram[rr][ll] + 1
+                if rr in self._bigram_reverse:
+                    if ll in self._bigram_reverse[rr]:
+                        self._bigram_reverse[rr][ll] = self._bigram_reverse[rr][ll] + 1
                     else:
-                        self._bigram[rr][ll] = 1
+                        self._bigram_reverse[rr][ll] = 1
                 else:
-                    self._bigram[rr] = {ll:1}
+                    self._bigram_reverse[rr] = {ll:1}
+                if ll in self._bigram:
+                    if rr in self._bigram[ll]:
+                        self._bigram[ll][rr] = self._bigram[ll][rr] + 1
+                    else:
+                        self._bigram[ll][rr] = 1
+                else:
+                    self._bigram[ll] = {rr:1}
 
     def valid_bigrams(self):
         """
@@ -188,9 +214,9 @@ class BigramFinder:
         score.
         """
         valid_grams = []
-        for rr in self._bigram:
-            for ll in self._bigram[rr]:
-                if self._bigram[rr][ll] >= self._min_ngram:
+        for rr in self._bigram_reverse:
+            for ll in self._bigram_reverse[rr]:
+                if self._bigram_reverse[rr][ll] >= self._min_ngram:
                     valid_grams.append((ll,rr))
         return valid_grams
         
