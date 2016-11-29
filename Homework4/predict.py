@@ -59,11 +59,16 @@ if __name__ == "__main__":
     for dd in train_x, test_x:                
         dd["NOPOLL"] = pandas.isnull(dd["VALUE"])
         dd["VALUE"] = dd["VALUE"].fillna(0.0)
+        dd["NOOBS"] = pandas.isnull(dd["OBS"])
+        dd["OBS"] = dd["OBS"].fillna(0.0)
         
     # create feature list
     features = list(y_data.STATE)
     features.append("VALUE")
-    features.append("NOPOLL")    
+    features.append("NOPOLL")
+    features.append("NOOBS")
+    features.append("OBS")
+
         
     # fit the regression
     mod = linear_model.LinearRegression()
