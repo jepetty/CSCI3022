@@ -56,8 +56,6 @@ class LogReg:
         :param num_features: The number of features (including bias)
         :param learning_rate: How big of a SG step we take
         """
-        # num_features is the length of the vocabulary in question 
-        #   -> keep things at the same index across the board
         self.beta = zeros(num_features)
         self.learning_rate = learning_rate
 
@@ -92,14 +90,17 @@ class LogReg:
         :param train_example: The example to take the gradient with respect to
         :return: The current vector of parameters
         """
+        # Calculate P(y = 1 | x)
+        exp_sum = 0
         for i in range(len(train_example.x)):
-            # occurs when the word in the dictionary is in this training set
-            if train_example.x[i] != 0:
-                #print(i)
-                if i != 0:
-                #if i in train_example.nonzero:
-                    print(i, " ", train_example.nonzero[i], " ", train_example.x[i], " ", train_example.y)
+            exp_sum = exp_sum + self.beta[i]*train_example.x[i]
+        prob = exp(exp_sum)/(1 + exp(exp_sum))
 
+        # Apply stochastic gradient ascent to each feature
+        for feature in range(len(self.beta)):
+            x = train_example.x[feature]
+            self.beta[feature] = self.beta[feature] + self.learning_rate*(train_example.y - prob)*x
+            
         return self.beta
 
 
@@ -123,15 +124,9 @@ def read_dataset(positive, negative, vocab, test_proportion=.1):
 
     train = []
     test = []
-    # positive words stored in "positive file", negative in "negative" file
-    # positive words assigned value of 1, negative value of 0
     for label, input in [(1, positive), (0, negative)]:
         for line in open(input):
-            #print(line, "\n******************\n")
-            # Basically ex keeps a list of words and counts from these lines of positive and
-            # negative files, checks that they're in the vocab
             ex = Example(label, line.split(), vocab, df)
-            # randomly assign an example to the test group or the training group
             if random.random() <= test_proportion:
                 test.append(ex)
             else:
@@ -157,14 +152,11 @@ if __name__ == "__main__":
                            type=int, default=1, required=False)
 
     args = argparser.parse_args()
-    # returns from files of negative and postive words a set of training data,
-    # test data, and the vocabulary of the model
     train, test, vocab = read_dataset(args.positive, args.negative, args.vocab)
 
     print("Read in %i train and %i test" % (len(train), len(test)))
 
     # Initialize model
-    # args.step is learning rate = 0.1
     lr = LogReg(len(vocab), args.step)
 
     # Iterations
@@ -177,5 +169,5 @@ if __name__ == "__main__":
             if update_number % 5 == 1:
                 train_lp, train_acc = lr.progress(train)
                 ho_lp, ho_acc = lr.progress(test)
-                #print("Update %i\tTP %f\tHP %f\tTA %f\tHA %f" %
-                    #  (update_number, train_lp, ho_lp, train_acc, ho_acc))
+                print("Update %i\tTP %f\tHP %f\tTA %f\tHA %f" %
+                      (update_number, train_lp, ho_lp, train_acc, ho_acc))
