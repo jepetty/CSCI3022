@@ -103,6 +103,34 @@ class LogReg:
             
         return self.beta
 
+    def find_best_predictors(self):
+        first = 0
+        second = 0
+        third = 0
+        result = [0,0,0]
+
+        for feature in range(len(self.beta)):
+            if abs(self.beta[feature]) > first:
+                first = abs(self.beta[feature])
+                result[0] = feature
+            elif abs(self.beta[feature]) > second:
+                second = abs(self.beta[feature])
+                result[1] = feature
+            elif abs(self.beta[feature]) > third:
+                third = self.beta[feature]
+                result[2] = feature
+
+        return result
+
+    def find_worst_predictors(self):
+        result = []
+
+        for i in range(len(self.beta)):
+            if self.beta[i] == 0:
+                result.append(i)
+
+        return result
+
 
 def read_dataset(positive, negative, vocab, test_proportion=.1):
     """
@@ -171,3 +199,11 @@ if __name__ == "__main__":
                 ho_lp, ho_acc = lr.progress(test)
                 print("Update %i\tTP %f\tHP %f\tTA %f\tHA %f" %
                       (update_number, train_lp, ho_lp, train_acc, ho_acc))
+                
+    best = lr.find_best_predictors()
+    worst = lr.find_worst_predictors()
+    for i in best:
+        print(vocab[i], " ", lr.beta[i])
+    for i in worst:
+        print(vocab[i], " ", lr.beta[i])
+
